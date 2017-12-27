@@ -3,7 +3,9 @@ ANN is short for artifcial neural network; it's widely used for pattern recognit
 # Status
 This project is still in progress. The ANN in one thread is implemented; unit test is done and functional test with logical AND is done.
 # To-Do
-## thread-pool support for large networks
-## performance benchmark
-## update Readme
-## applied to MNIST (Handwriting digit data set)
+|                    Task                     |   Status  |      Date     |                       Comment                   |  
+|---------------------------------------------|-----------|---------------|-------------------------------------------------|
+|       thread-pool support for large networks|   Done    |    Dec 27     |Function test is done for Logic And; TODO: MNIST |
+|                        performance benchmark|   TBD     |               |                                                 |
+|                                update Readme|In Progress|               |                                                 |
+|applied to MNIST (Handwriting digit data set)|In Progress|               |                                                 |
