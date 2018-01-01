@@ -9,7 +9,14 @@ sets of neurons. Each thread has associated its own set.This method imposes high
 # Status
 This project is still in progress. First batch of test results are achieved. More specifically, the status is updated in TO-DO section.
 # Test Results
-Test environments:
+## MNIST
+Four files need to be downloaded from http://yann.lecun.com/exdb/mnist/.
+* train-images-idx3-ubyte
+* train-labels-idx1-ubyte
+* t10k-images-idx3-ubyte
+* t10k-labels-idx1-ubyte
+First two is for training and others for testing.
+## Test environments:
 * Memory: 2.5 GiB
 * Processor: Genuine Intel® CPU T2500 @ 2.00GHz × 2
 * OS Type: Ubuntu 16.04, 32-bit
@@ -17,6 +24,7 @@ Test environments:
 |       Dataset      |Number of Samples|Iteration |Number of Neurons|Number of Threads|Training time:(s)|Accuracy Ratio (%)|
 |--------------------|-----------------|----------|-----------------|-----------------|-----------------|------------------|
 |               MNIST|     60000(10000)|         1|    784x100x10   |                4|          147.619|             94.64|
+|               MNIST|     60000(10000)|         1|784x256x256x10   |                4|          378.866|             94.63|
 
 # To-Do
 |                    Task                     |   Status  |      Date     |                       Comment                   |  
