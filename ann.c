@@ -78,15 +78,6 @@ void free_layer (Layer *l)
 
 void free_plane (Plane *plane)
 {
-    for (int i = 0; i < plane->m_ln - 1; i ++)
-    {
-        LayerOutput *lop = NULL;
-        while ((lop = (LayerOutput*) g_async_queue_try_pop (plane->m_q_layers[i])) != NULL)
-        {
-            free_layer_output (lop);
-        }
-        g_async_queue_unref (plane->m_q_layers[i]);
-    }
     g_free (plane->m_weights);
 
     for (int i = 0; i < plane->m_ln; i ++)
@@ -94,17 +85,7 @@ void free_plane (Plane *plane)
         free_layer (plane->m_layers[i]);
     }
     g_free (plane->m_layers);
-    g_free (plane->m_q_layers);
     g_free (plane);
-}
-
-void free_layer_output (LayerOutput *lo)
-{
-    for (int i = 0; i < lo->m_size; i ++)
-    {
-        g_free (lo->m_output [i]);
-    }
-    g_free (lo);
 }
 
 void set_plane_func (Plane *plane, actviation_func func, delta_actviation_func dfunc)
@@ -181,17 +162,6 @@ gdouble act_relu (gdouble x)
         return x;
     }
     return 0;
-}
-
-LayerOutput *construct_layer_output (guint n)
-{
-    LayerOutput *lo = g_malloc (sizeof (LayerOutput));
-    lo->m_size = n;
-    for (int i = 0; i < n; i ++)
-    {
-        lo->m_output[i] = g_malloc (sizeof (gdouble *));
-    }
-    return lo;
 }
 
 /*
@@ -277,6 +247,9 @@ Layer *construct_layer (guint n, guint m, guint id, gboolean with_bias, layer_ty
 Plane *construct_plane (guint in, guint hn, guint on, guint hln, guint id)
 {
     Plane *plane = g_malloc (sizeof (Plane));
+    plane->m_in = in;
+    plane->m_on = on;
+    plane->m_hn = hn;
     plane->m_id = id;
     plane->m_ln = hln + 2; //input layer + output layer
     plane->m_layers = g_malloc (sizeof (Layer *) * plane->m_ln);
@@ -294,11 +267,6 @@ Plane *construct_plane (guint in, guint hn, guint on, guint hln, guint id)
     plane->m_weights = g_malloc (sizeof (gdouble **) * (plane->m_ln - 1));
 
     link_plane_layers (plane);
-    plane->m_q_layers = g_malloc (sizeof (GAsyncQueue *) * (plane->m_ln - 1));
-    for (int i = 0; i < plane->m_ln - 1; i ++)
-    {
-        plane->m_q_layers[i] = g_async_queue_new ();
-    }
 
     return plane;
 }
@@ -620,6 +588,9 @@ PlaneBin *construct_plane_bin (guint pn, guint in, guint hn, guint on, guint hl)
         init_plane_bp (pb->m_plane[i]);
     }
 
+    memset (&pb->m_cbs, 0, sizeof (Callbacks));
+    pb->m_curr_plane = pb->m_plane[0];
+    pb->m_loader = NULL;
 
     return pb;
 }
@@ -721,15 +692,26 @@ void bp_layer_act_bp (Layer *l1, Layer *l2)
 
 void bp_layer_act_exp (Layer *l, gdouble *exp)
 {
-    DBG ("expectation:");
     for (int i = 0; i < layer_size (l); i ++)
     {
         Neuron *n = layer_neuron (l, i);
-        gdouble *o = &n->m_output;
+        gdouble o = n->m_output;
+        //g_print ("%g ", exp[i]);
+#ifdef DEBUG_DATA
+        DBG ("%g ", o);
+#endif
+        n->m_delta = (exp[i] - o) * n->m_dact_func (o);
+    }
+    //g_print ("\n");
+#ifdef DEBUG_DATA
+    NL;
+    DBG ("expectation:");
+    for (int i = 0; i < layer_size (l); i ++)
+    {
         DBG ("%g ", exp[i]);
-        n->m_delta = (exp[i] - *o) * n->m_dact_func (*o);
     }
     NL;
+#endif
 }
 
 void bp_plane_act (Plane *plane, gdouble *exp, gdouble lr)
@@ -788,16 +770,25 @@ void load_data (PlaneBin *bin, gdouble *inputs)
 {
     for (int i = 0; i < bin->m_size; i ++)
     {
+#ifdef DEBUG_DATA
+        DBG ("loading data: ");
+#endif
         Layer *il = bin->m_plane[i]->m_layers[0];
         for (int j = 0; j < layer_raw_size (il); j ++)
         {
             layer_neuron (il, j)->m_output = inputs[j];
+#ifdef DEBUG_DATA
+            DBG ("%g ", layer_neuron (il, j)->m_output);
+#endif
         }
+        NL;
     }
 }
 
+
 void bp_plane_bin_act (PlaneBin *pb, gdouble *exp, gdouble lr)
 {
+    pb->m_lr = lr;
     for (int i = 0; i < pb->m_size; i ++)
     {
         bp_plane_act (pb->m_plane[i], exp, lr);
@@ -833,7 +824,7 @@ gboolean AlmostEqualRelative(gdouble A, gdouble B,
     // Find the largest
     float largest = (B > A) ? B : A;
  
-    if (diff <= largest * maxRelDiff)
+    if (diff <= (largest * maxRelDiff))
         return TRUE;
     return FALSE;
 }

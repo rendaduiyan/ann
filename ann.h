@@ -11,8 +11,66 @@ struct _PlaneBin;
 struct _LayerOutput;
 struct _ArraySize;
 
+#ifdef DEBUG_VERBOSE
+#define DEBUG
+#define DEBUG_FUNC
+#define DEBUG_DATA
+#endif
+
+#ifdef DEBUG 
+#define DBG(...) g_printerr (__VA_ARGS__)
+#define DL DBG ("%d\n", __LINE__)
+#define NL DBG ("\n")
+#define SEP DBG ("%s\n", sep)
+#define DINT(x) DBG ("%s = %u\n", #x, (x))
+#else
+#define DBG(...) do {} while (0) 
+#define DL do {} while (0)
+#define NL do {} while (0)
+#define SEP do {} while (0)
+#define DINT(x)  do {} while(0)
+#endif
+
 typedef gdouble (*actviation_func) (gdouble x);
 typedef gdouble (*delta_actviation_func) (gdouble x);
+typedef void (*test_after_training) (gpointer data);
+typedef void (*check_internally) (gpointer data);
+
+typedef guint (*next_batch) (gpointer data);
+typedef gpointer (*init_loading) (gpointer data);
+typedef void (*copy_data) (gpointer data);
+typedef void (*free_data) (gpointer data);
+
+typedef struct _Callbacks
+{
+    /*
+     * reserver two functions to be called when:
+     * 1) after output is computed
+     * 2) after weight is back-probogated
+     */
+    check_internally m_check_fwd_cb;
+    check_internally m_check_bwd_cb;
+    /*
+     * test cases to run
+     */
+    test_after_training m_test_cb;
+    /*
+     * loading next batch of samples
+     */
+    next_batch m_next_batch_cb;
+    /*
+     * initializing sample loading
+     */
+    init_loading m_init_loading_cb;
+    /*
+     * copy one batch to train
+     */
+    copy_data m_copy_data_cb;
+    /*
+     * free data
+     */
+    free_data m_free_cb;
+} Callbacks; 
 
 extern gchar * const sep;
 extern gchar * const ln_input;
@@ -84,20 +142,16 @@ typedef struct _Layer
     layer_type m_lt;
 } Layer;
 
-typedef struct _LayerOutput
-{
-    gdouble **m_output;
-    guint m_size;
-} LayerOutput;
-
 typedef struct _Plane
 {
     Layer **m_layers;
     guint m_ln;
     gdouble ***m_weights;
     ArraySize *m_dims;
-    GAsyncQueue **m_q_layers;
     guint m_id;
+    guint m_in;
+    guint m_on;
+    guint m_hn;
 } Plane;
 
 typedef struct _PlaneBin
@@ -107,6 +161,34 @@ typedef struct _PlaneBin
     gdouble ***m_weights;
     guint m_w_num;
     ArraySize *m_dims;
+    Plane *m_curr_plane;
+    /*
+     * Leveraging PlaneBin as a container for 
+     * all information; if PlaneBin is removed
+     * Move them to Plane
+     */
+    gint64 m_start_time;
+    GThread **m_workers;
+    Neuron *m_holder;
+    GAsyncQueue *m_q_units;
+    GMainContext **m_contexts;
+    GMainLoop *m_loop;
+    guint m_n_thread;
+    volatile gint m_n_done;
+    volatile gint m_sample_ready;
+    data_flow m_df;
+    guint m_n_iteration;
+    guint m_curr_iter;
+    gdouble m_lr;
+    gdouble **m_in_data;
+    gdouble **m_exp_val;
+    guint m_n_sample;
+    guint m_curr_sample;
+    guint m_batch_size;
+    guint m_curr_sample_all;
+    guint m_n_sample_all;
+    gpointer m_loader;
+    Callbacks m_cbs;
 } PlaneBin;
 
 /*
@@ -129,7 +211,7 @@ gsize layer_start_neuron (Layer *l);
 gboolean AlmostEqualRelative(gdouble A, gdouble B, gdouble maxRelDiff);
 
 #define FLT_EPSILON __FLT_EPSILON__
-#define flt_equal(a, b) AlmostEqualRelative (a, b, FLT_EPSILON)
+#define flt_equal(a, b) AlmostEqualRelative (a, b, FLT_EPSILON * 10)
 
 /*
  * leveraging glib GArray for GArray
@@ -151,14 +233,12 @@ gdouble dact_threshold (gdouble x);
 void free_array (gdouble **arr, guint s);
 void free_neuron (Neuron *n);
 void free_layer (Layer *l);
-void free_layer_output (LayerOutput *lo);
 void free_plane (Plane *plane);
 void free_plane_bin (PlaneBin *pb);
 
-Neuron *construct_neurons (guint n, guint id);
+Neuron *construct_neuron (guint n, guint id);
 Layer *construct_layer (guint n, guint m, guint id, gboolean with_bias, layer_type lt);
 
-LayerOutput *construct_layer_output (guint n);
 Plane *construct_plane (guint in, guint hn, guint on, guint hl, guint id);
 PlaneBin *construct_plane_bin (guint pn, guint in, guint hn, guint on, guint hl);
 
@@ -203,16 +283,6 @@ void assign_weights_to_layer_bp (Layer *l, ArraySize *as, gdouble **w);
 
 void load_data (PlaneBin *bin, gdouble *inputs);
 
-#ifdef DEBUG 
-#define DBG(...) g_printerr (__VA_ARGS__)
-#define DL DBG ("%d\n", __LINE__)
-#define NL DBG ("\n")
-#define SEP DBG ("%s\n", sep)
-#else
-#define DBG(...)
-#define DL 
-#define NL
-#define SEP
-#endif
+
 
 #endif
