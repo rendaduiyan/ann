@@ -7,7 +7,7 @@ There are two effective approaches to parallel network training:
 sets of neurons. Each thread has associated its own set.This method imposes higher frequency of synchronization than data parallelization.
 * Approach in this project is similar to second one but it's DIFFERENT: each thread has NO associated its own set. It's more like a threadpool consuming network nodes in a thread-safety queue. Neurons in lower layers are always pushed into the queue than those in higher layers. The target is to deminlate the overhead for high-frequency-synchronization.
 # Status
-This project is still in progress. The ANN in one thread is implemented; first batch of test results are achieved. More specifically, the status is updated in TO-DO section.
+This project is still in progress. First batch of test results are achieved. More specifically, the status is updated in TO-DO section.
 # Test Results
 Test environments:
 * Memory: 2.5 GiB
