@@ -13,6 +13,7 @@ Test environments:
 * Memory: 2.5 GiB
 * Processor: Genuine Intel® CPU T2500 @ 2.00GHz × 2
 * OS Type: Ubuntu 16.04, 32-bit
+
 |       Dataset      |Number of Samples|Iteration |Number of Neurons|Number of Threads|Training time:(s)|Accuracy Ratio (%)|
 |--------------------|-----------------|----------|-----------------|-----------------|-----------------|------------------|
 |               MNIST|     60000(10000)|         1|    784x100x10   |                4|          147.619|             94.64|
@@ -24,4 +25,5 @@ Test environments:
 |                        performance benchmark|In progress|    Dec 31     |Test is done for MNIST                           |                             
 |                                update Readme|In Progress|    Dec 31     |Updated                                          |
 |applied to MNIST (Handwriting digit data set)|       Done|    Dec 31     |UT and other function test are broken; added new Task                                                 |
-|              Fix broken UT and function test|        New|               | 
+|                           More test on MNIST|        New|               |                                                 |
+|              Fix broken UT and function test|        New|               |                                                 |
