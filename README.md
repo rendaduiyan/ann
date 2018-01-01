@@ -6,6 +6,9 @@ There are two effective approaches to parallel network training:
 * Node Parallelizations: In this case, there is only one instance of the network. The network layers are divided into disjoint
 sets of neurons. Each thread has associated its own set.This method imposes higher frequency of synchronization than data parallelization.
 * Approach in this project is similar to second one but it's DIFFERENT: each thread has NO associated its own set. It's more like a threadpool consuming network nodes in a thread-safety queue. Neurons in lower layers are always pushed into the queue than those in higher layers. The target is to deminlate the overhead for high-frequency-synchronization.
+# Build
+gcc -g -o ann_ft_mnist ../ann.c ../comp_thread.c threaded_func_test_mnist.c `pkg-config --cflags --libs glib-2.0` -lm
+
 # Status
 This project is still in progress. First batch of test results are achieved. More specifically, the status is updated in TO-DO section.
 # Test Results
@@ -15,6 +18,7 @@ Four files need to be downloaded from http://yann.lecun.com/exdb/mnist/.
 * train-labels-idx1-ubyte
 * t10k-images-idx3-ubyte
 * t10k-labels-idx1-ubyte
+
 First two is for training and others for testing.
 ## Test environments:
 * Memory: 2.5 GiB
