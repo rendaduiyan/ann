@@ -1,10 +1,20 @@
-#targets for function test
-add_executable (ann_ft_s func_test.c)
-add_executable (ann_ft_t threaded_func_test.c)
-add_executable (ann_ft_mnist threaded_func_test_mnist.c)
+cmake_minimum_required (VERSION 2.8.11)
+project (ANN)
 
-#link targets to lib ann
-target_link_libraries (ann_ft_s LINK_PUBLIC ann)
-target_link_libraries (ann_ft_t LINK_PUBLIC ann)
-target_link_libraries (ann_ft_mnist LINK_PUBLIC ann)
+#glib
+FIND_PACKAGE (PkgConfig)
+PKG_CHECK_MODULES (GLIB2 REQUIRED glib-2.0>=2.48.0)
+#include FindGLIB.cmake
+
+INCLUDE_DIRECTORIES (/usr/include/glib-2.0 /usr/lib/i386-linux-gnu/glib-2.0/include)
+LINK_DIRECTORIES (glib-2.0)
+
+add_library (ann ann.c comp_thread.c)
+TARGET_LINK_LIBRARIES (ann glib-2.0 m)
+
+target_include_directories (ann PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+SET (CMAKE_INCLUDE_CURRENT_DIR ON)
+
+add_subdirectory (unit-test)
+add_subdirectory (func-test)
 
