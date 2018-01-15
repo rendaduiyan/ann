@@ -1,5 +1,15 @@
+/*
+ * threaded_func_test.c, using logic and to test basic funcationalities 
+ * of ANN with Node Parallelization.
+ * Copyright (c) 2018, haibolei <duiyanrenda@gmail.com>
+ */
+
 #include <stdlib.h>
 #include "func_test.h"
+
+/*
+ * TO-DO: implementation callbacks for threaded ANN
+ */
 
 void init_weights (PlaneBin *pb)
 {
@@ -77,7 +87,7 @@ int main (int argc, char **argv)
     static const guint hln = 1;
 
     PlaneBin *bin = construct_plane_bin (1, in, hn, on, hln);
-    bin->m_test = logic_and_test;
+    bin->m_cbs.m_test_cb = logic_and_test;
     //set_plane_func (bin->m_plane[0], act_relu, dact_relu);
     //set_plane_func (bin->m_plane[0], act_threshold, dact_threshold);
     bin->m_n_iteration = training_iter;
