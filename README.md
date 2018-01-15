@@ -7,7 +7,32 @@ There are two effective approaches to parallel network training:
 sets of neurons. Each thread has associated its own set.This method imposes higher frequency of synchronization than data parallelization.
 * Approach in this project is similar to second one but it's DIFFERENT: each thread has NO associated its own set. It's more like a threadpool consuming network nodes in a thread-safety queue. Neurons in lower layers are always pushed into the queue than those in higher layers. The target is to deminlate the overhead for high-frequency-synchronization.
 # Build
-gcc -g -o ann_ft_mnist ../ann.c ../comp_thread.c threaded_func_test_mnist.c `pkg-config --cflags --libs glib-2.0` -lm
+CMake files are added so it's easier now:
+ann/
+```
+cmake .
+make
+Scanning dependencies of target ann
+[  7%] Building C object CMakeFiles/ann.dir/ann.c.o
+[ 15%] Building C object CMakeFiles/ann.dir/comp_thread.c.o
+[ 23%] Linking C static library libann.a
+[ 23%] Built target ann
+[ 30%] Building C object unit-test/CMakeFiles/ann_ut_t.dir/threaded_test.c.o
+[ 38%] Linking C executable ann_ut_t
+[ 38%] Built target ann_ut_t
+[ 46%] Building C object unit-test/CMakeFiles/ann_ut_s.dir/test.c.o
+[ 53%] Linking C executable ann_ut_s
+[ 53%] Built target ann_ut_s
+[ 61%] Building C object func-test/CMakeFiles/ann_ft_s.dir/func_test.c.o
+[ 69%] Linking C executable ann_ft_s
+[ 69%] Built target ann_ft_s
+[ 76%] Building C object func-test/CMakeFiles/ann_ft_mnist.dir/threaded_func_test_mnist.c.o
+[ 84%] Linking C executable ann_ft_mnist
+[ 84%] Built target ann_ft_mnist
+[ 92%] Building C object func-test/CMakeFiles/ann_ft_t.dir/threaded_func_test.c.o
+[100%] Linking C executable ann_ft_t
+[100%] Built target ann_ft_t
+```
 
 # Status
 This project is still in progress. First batch of test results are achieved. More specifically, the status is updated in TO-DO section.
@@ -39,3 +64,4 @@ First two is for training and others for testing.
 |applied to MNIST (Handwriting digit data set)|       Done|    Dec 31     |UT and other function test are broken; added new Task                                                 |
 |                           More test on MNIST|        New|               |                                                 |
 |              Fix broken UT and function test|        New|               |                                                 |
+|              Added CMake files              |        New|               |                                                 |
