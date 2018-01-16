@@ -1,3 +1,9 @@
+/*
+ * threaded_test.c, unit test for multiple-threaded bp-ann
+ *
+ * Copyright (c) 2018, haibolei <duiyanrenda@gmail.com>
+ */
+
 #include <stdlib.h>
 #include "test.h"
 #include "../comp_thread.h"
@@ -208,8 +214,8 @@ void test_1_hidden ()
     g_assert_cmpint (pb->m_dims[1].m_x, ==, 3);
     g_assert_cmpint (pb->m_dims[1].m_y, ==, 1);
 
-    pb->m_check_func[0] = check_1;
-    pb->m_check_func[1] = check_2;
+    pb->m_cbs.m_check_fwd_cb = check_1;
+    pb->m_cbs.m_check_bwd_cb = check_2;
     
 
     ln ++; //first hidden layer

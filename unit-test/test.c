@@ -1,3 +1,9 @@
+/*
+ * test.c, unit test for single-threaded bp-ann
+ *
+ * Copyright (c) 2018, haibolei <duiyanrenda@gmail.com>
+ */
+
 #include <stdlib.h>
 #include "test.h"
 
