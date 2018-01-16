@@ -217,9 +217,9 @@ void producer_func_internal (PlaneBin *pb)
                 /*
                  * training for this iteration is done
                  */
+                pb->m_curr_iter ++;
                 if (pb->m_curr_iter < pb->m_n_iteration)
                 {
-                    pb->m_curr_iter ++;
                     pb->m_df = df_fwd;
                     /*
                      * always start from hidden layer
