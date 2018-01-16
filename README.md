@@ -1,13 +1,13 @@
 # ann
-ANN is short for artifcial neural network; it's widely used for pattern recognition (including image recogintion, motion dection, etc). This is just a start for pratical application of ANN. Beside the paralelle computation, ANN can be simplified into maxtrix compuation. This project is to split the computation into small computing units - neuron. This will have better performance for ANN with thousands of neurons in it.
+ANN is short for artifcial neural network; it's widely used for pattern recognition (including image recogintion, motion dection, etc). This is just a start for pratical application of ANN. Beside the paralelle computation, ANN can be simplified into matrix computation. However, this project is to split the computation into small computing units - neuron. This will have better performance for ANN with thousands of neurons in it and it's a starter for GPU version.
 # Parallelizations
-There are two effective approaches to parallel network training:
+There are two effective approaches for parallel network training:
 * Data Parallelizations: The training data is devided into disjoint set. Each thread has its own network and works on it own dataset. Weights synchronization occurs periodically when N frames are processed.
 * Node Parallelizations: In this case, there is only one instance of the network. The network layers are divided into disjoint
 sets of neurons. Each thread has associated its own set.This method imposes higher frequency of synchronization than data parallelization.
 * Approach in this project is similar to second one but it's DIFFERENT: each thread has NO associated its own set. It's more like a threadpool consuming network nodes in a thread-safety queue. Neurons in lower layers are always pushed into the queue than those in higher layers. The target is to deminlate the overhead for high-frequency-synchronization.
 # Build
-CMake files are added so it's easier now:
+CMake files are added so that this task is quite easy:
 ann/
 ```
 cmake .
@@ -58,10 +58,10 @@ First two is for training and others for testing.
 # To-Do
 |                    Task                     |   Status  |      Date     |                       Comment                   |  
 |---------------------------------------------|-----------|---------------|-------------------------------------------------|
-|       thread-pool support for large networks|   Done    |    Dec 27     |Function test is done for Logic And; TODO: MNIST |
-|                        performance benchmark|In progress|    Dec 31     |Test is done for MNIST                           |                             
-|                                update Readme|In Progress|    Dec 31     |Updated                                          |
+|       thread-pool support for large networks|       Done|    Dec 27     |Function test is done for Logic And; TODO: MNIST |
+|                        performance benchmark|       Done|    Dec 31     |Test is done for MNIST                           |                             
+|                                update Readme|In Progress|    Jan 16     |Updated                                          |
 |applied to MNIST (Handwriting digit data set)|       Done|    Dec 31     |UT and other function test are broken; added new Task                                                 |
-|                           More test on MNIST|        New|               |                                                 |
-|              Fix broken UT and function test|        New|               |                                                 |
-|              Added CMake files              |        New|               |                                                 |
+|                           More test on MNIST|In progress|    Jan 16     |                                      |
+|              Fix broken UT and function test|       Done|    Jan 16     |                                                 |
+|              Added CMake files              |       Done|    Jan 15     |                                                 |
