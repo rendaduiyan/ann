@@ -1,3 +1,8 @@
+/*
+ * comp_thread.c, parallelized computation with multiple-thread
+ * Copyright (c) 2018, haibolei <duiyanrenda@gmail.com>
+ *
+ */
 #include <string.h>
 #include "comp_thread.h"
 

@@ -1,3 +1,9 @@
+/*
+ * ann.c, implementation for bp-ann
+ *
+ * Copyright (c) 2018, haibolei <duiyanrenda@gmail.com>
+ *
+ */
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
