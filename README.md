@@ -65,3 +65,4 @@ First two is for training and others for testing.
 |                           More test on MNIST|In progress|    Jan 16     |                                      |
 |              Fix broken UT and function test|       Done|    Jan 16     |                                                 |
 |              Added CMake files              |       Done|    Jan 15     |                                                 |
+|                        Softmax              |        New|    Jan 17     |                                                 |
